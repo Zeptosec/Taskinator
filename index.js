@@ -1,10 +1,15 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
 
-const getSchedule = async (req, res) => {
+/**
+ * fetches schedule from page and saves locally
+ * @returns true if fetching and saving of the schedule was successful
+ */
+const fetchSchedule = async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   try {
@@ -17,10 +22,10 @@ const getSchedule = async (req, res) => {
 
     const userField = await page.waitForSelector('#username');
     await userField.type(process.env.USER);
-    await page.screenshot({ path: 'user.png'});
+    await page.screenshot({ path: 'user.png' });
     const passField = await page.waitForSelector('#password');
     await passField.type(process.env.PASS);
-    await page.screenshot({ path: 'pass.png'});
+    await page.screenshot({ path: 'pass.png' });
     const loginField = await page.waitForSelector('input[type=submit]');
     await loginField.click();
     const yesButton = await page.waitForSelector('#yesbutton');
@@ -39,13 +44,31 @@ const getSchedule = async (req, res) => {
     await tabl.screenshot({ path: 'schedule.png' });
 
     await browser.close();
-    res.status(200).sendFile(__dirname + "/schedule.png")
+    return true;
   } catch (err) {
     console.log(err);
     await page.screenshot({ path: 'error.png' });
+  }
+  return false;
+}
+
+const getSchedule = async (req, res) => {
+  const path = __dirname + "/schedule.png";
+  try {
+    if (fs.existsSync(path)) {
+      res.status(200).sendFile(path);
+    } else {
+      res.status(500).json({ message: "File is missing..." });
+    }
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 }
 
 app.get("/", getSchedule);
 app.listen(process.env.PORT || 4000);
+
+setInterval(async () => {
+  await fetchSchedule();
+}, 3600000) // 28.8min = 1728000
+fetchSchedule();
