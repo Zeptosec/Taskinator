@@ -10,15 +10,15 @@ const getSchedule = async (req, res) => {
     const page = await browser.newPage();
     await page.goto('https://uais.cr.ktu.lt/ktuis/stud.busenos');
     await page.click("input[type=submit]");
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 2000));
     await page.click("button[type=submit]")
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 2000));
     await page.type('#username', process.env.USER);
     await page.type('#password', process.env.PASS);
     await page.click('input[type=submit]');
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 2000));
     await page.click('#yesbutton');
-    await new Promise(r => setTimeout(r, 5000));
+    await new Promise(r => setTimeout(r, 10000));
     const query = "Mano savait";
     await page.evaluate(query => {
       const elements = [...document.querySelectorAll('a')];
@@ -26,7 +26,7 @@ const getSchedule = async (req, res) => {
 
       targetElement && targetElement.click();
     }, query)
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 5000));
     // maybe use html parser to parse instead of sending an image
     const tabl = await page.$('#kal_div_id');
     await tabl.screenshot({ path: 'schedule.png' });
