@@ -55,11 +55,10 @@ const fetchSchedule = async () => {
 const getSchedule = async (req, res) => {
   const path = __dirname + "/schedule.png";
   try {
-    if (fs.existsSync(path)) {
-      res.status(200).sendFile(path);
-    } else {
-      res.status(500).json({ message: "File is missing..." });
+    if (!fs.existsSync(path)) {
+      await fetchSchedule();
     }
+    res.status(200).sendFile(path);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
