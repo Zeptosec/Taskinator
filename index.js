@@ -67,7 +67,7 @@ const getSchedule = async (req, res) => {
 app.get("/", getSchedule);
 app.listen(process.env.PORT || 4000);
 
-setInterval(async () => {
-  await fetchSchedule();
-}, 3600000) // 28.8min = 1728000
-fetchSchedule();
+// setInterval(async () => {
+//   await fetchSchedule();
+// }, 3600000) // 28.8min = 1728000
+// fetchSchedule();
